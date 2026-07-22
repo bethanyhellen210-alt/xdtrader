@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import React from 'react';
+import WelcomePage from '@/pages/welcome';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { cleanupUrl, handleOAuthCallback } from '@/external/deriv-core';
 import ChunkLoader from '@/components/loader/chunk-loader';
@@ -72,6 +73,8 @@ const router = createBrowserRouter(
  * 3. Router provider setup
  */
 function App() {
+    const [showWelcome, setShowWelcome] = useState(true);
+
     // Handle account switching via URL parameter
     useAccountSwitching();
 
@@ -112,6 +115,10 @@ function App() {
 
         handleCallback();
     }, []);
+
+    if (showWelcome) {
+        return <WelcomePage onEnter={() => setShowWelcome(false)} />;
+    }
 
     return <RouterProvider router={router} />;
 }

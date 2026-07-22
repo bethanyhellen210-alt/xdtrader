@@ -1,22 +1,22 @@
 {
-    "brand_name": "YourBrand",
-    "brand_domain": "yourbrand.com",
+    "brand_name": "Q-Trades",
+    "brand_domain": "q-trades.com",
     "brand_hostname": {
         "staging": "staging.yourbrand.com/dashboard",
         "production": "yourbrand.com/dashboard"
     },
     "domain_name": "YourBrand.com",
     "colors": {
-        "primary": "#3B82F6",
-        "secondary": "#64748b",
-        "tertiary": "#8b5cf6",
+        "primary": "#06b6d4",
+        "secondary": "#0e7490",
+        "tertiary": "#22d3ee",
         "success": "#10b981",
         "danger": "#ef4444",
         "warning": "#f59e0b",
-        "info": "#0ea5e9",
-        "neutral": "#6b7280",
-        "black": "#0f172a",
-        "white": "#ffffff",
+        "info": "#06b6d4",
+        "neutral": "#475569",
+        "black": "#050d1a",
+        "white": "#f8fafc",
         "grey": {
             "50": "#f8fafc",
             "100": "#f1f5f9",
