@@ -1,0 +1,266 @@
+// ──────────────────────────────────────────────
+//  Q-Trades Cyber Tech Loader — Vision Cyan
+// ──────────────────────────────────────────────
+
+$cyan:      #06b6d4;
+$cyan-dim:  rgba(6, 182, 212, 0.18);
+$cyan-glow: rgba(6, 182, 212, 0.55);
+$bg:        #050d1a;
+$bg-2:      #071120;
+$text:      #e2e8f0;
+$text-dim:  #64748b;
+
+.qt-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: $bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Inter', 'Courier New', monospace;
+
+    // ── Dot-grid background ──────────────────
+    &__grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+            radial-gradient(circle, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+        background-size: 36px 36px;
+        animation: qt-grid-drift 20s linear infinite;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 90% 60% at 50% 0%, rgba(6,182,212,0.07) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 50% 100%, rgba(6,182,212,0.04) 0%, transparent 60%);
+        }
+    }
+
+    // ── Horizontal scan line ─────────────────
+    &__scan {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, $cyan 30%, $cyan 70%, transparent 100%);
+        opacity: 0.25;
+        animation: qt-scan 4s ease-in-out infinite;
+    }
+
+    // ── Body card ────────────────────────────
+    &__body {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        padding: 4.8rem 5.6rem;
+        min-width: 360px;
+        max-width: 480px;
+        background: rgba(7, 17, 32, 0.82);
+        border: 1px solid rgba(6, 182, 212, 0.18);
+        border-radius: 4px;
+        backdrop-filter: blur(12px);
+        box-shadow:
+            0 0 40px rgba(6,182,212,0.06),
+            inset 0 0 60px rgba(6,182,212,0.03);
+    }
+
+    // ── Logo mark ────────────────────────────
+    &__logo {
+        position: relative;
+        width: 7.2rem;
+        height: 7.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__logo-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 1.5px solid $cyan;
+
+        &--outer {
+            inset: 0;
+            opacity: 0.35;
+            animation: qt-spin 4s linear infinite;
+        }
+
+        &--inner {
+            inset: 14%;
+            opacity: 0.6;
+            animation: qt-spin-rev 3s linear infinite;
+        }
+    }
+
+    &__logo-ring--outer::before,
+    &__logo-ring--outer::after {
+        content: '';
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: $cyan;
+        border-radius: 50%;
+        box-shadow: 0 0 8px $cyan;
+    }
+
+    &__logo-ring--outer::before { top: -3px; left: 50%; transform: translateX(-50%); }
+    &__logo-ring--outer::after  { bottom: -3px; left: 50%; transform: translateX(-50%); }
+
+    &__logo-letter {
+        position: relative;
+        font-size: 2.8rem;
+        font-weight: 900;
+        color: $cyan;
+        text-shadow: 0 0 20px $cyan-glow;
+        letter-spacing: -0.02em;
+        z-index: 1;
+    }
+
+    // ── Brand text ───────────────────────────
+    &__brand {
+        display: flex;
+        align-items: baseline;
+        gap: 0.1em;
+        line-height: 1;
+    }
+
+    &__brand-q {
+        font-size: 3.6rem;
+        font-weight: 900;
+        color: $cyan;
+        text-shadow: 0 0 24px $cyan-glow, 0 0 48px rgba(6,182,212,0.25);
+        letter-spacing: -0.03em;
+    }
+
+    &__brand-hyphen {
+        font-size: 2.4rem;
+        font-weight: 300;
+        color: rgba(255,255,255,0.4);
+        margin: 0 0.05em;
+    }
+
+    &__brand-trades {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #f8fafc;
+        letter-spacing: 0.12em;
+        text-shadow: 0 0 12px rgba(255,255,255,0.12);
+    }
+
+    // ── Tagline ──────────────────────────────
+    &__tagline {
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        color: $text-dim;
+        margin: -0.8rem 0 0;
+        text-transform: uppercase;
+    }
+
+    // ── Progress track ───────────────────────
+    &__track {
+        position: relative;
+        width: 100%;
+        height: 2px;
+        background: rgba(6,182,212,0.1);
+        border-radius: 2px;
+        overflow: visible;
+        margin-top: 0.8rem;
+    }
+
+    &__bar {
+        height: 100%;
+        background: linear-gradient(90deg, rgba(6,182,212,0.6) 0%, $cyan 100%);
+        border-radius: 2px;
+        transition: width 0.05s linear;
+        position: relative;
+    }
+
+    &__bar-glow {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: $cyan;
+        filter: blur(6px);
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    // ── Terminal line ─────────────────────────
+    &__terminal {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.2rem;
+        font-family: 'Courier New', monospace;
+        color: $text-dim;
+        min-height: 1.8rem;
+    }
+
+    &__prompt {
+        color: $cyan;
+        font-weight: 700;
+        text-shadow: 0 0 8px $cyan-glow;
+    }
+
+    &__msg {
+        color: rgba(226,232,240,0.7);
+    }
+
+    &__cursor {
+        display: inline-block;
+        width: 8px;
+        height: 14px;
+        background: $cyan;
+        border-radius: 1px;
+        box-shadow: 0 0 6px $cyan-glow;
+        flex-shrink: 0;
+        transition: opacity 0.1s;
+    }
+
+    // ── Corner brackets ───────────────────────
+    &__corner {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-color: rgba(6,182,212,0.45);
+        border-style: solid;
+
+        &--tl { top: 12px; left: 12px;  border-width: 1.5px 0 0 1.5px; }
+        &--tr { top: 12px; right: 12px; border-width: 1.5px 1.5px 0 0; }
+        &--bl { bottom: 12px; left: 12px;  border-width: 0 0 1.5px 1.5px; }
+        &--br { bottom: 12px; right: 12px; border-width: 0 1.5px 1.5px 0; }
+    }
+}
+
+// ── Keyframes ─────────────────────────────────
+@keyframes qt-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes qt-spin-rev {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(-360deg); }
+}
+
+@keyframes qt-scan {
+    0%   { top: -2%;  opacity: 0; }
+    5%   { opacity: 0.25; }
+    95%  { opacity: 0.25; }
+    100% { top: 102%; opacity: 0; }
+}
+
+@keyframes qt-grid-drift {
+    from { background-position: 0 0; }
+    to   { background-position: 36px 36px; }
+}
