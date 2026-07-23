@@ -1,16 +1,25 @@
 .free-bots {
     padding: 2.4rem;
     overflow-y: auto;
-    height: 100%;
+    // Explicit height so the tab container's overflow:hidden doesn't clip us
+    height: calc(100vh - 13.8rem); // 9rem main + 4.8rem tab header
     background: var(--general-main-1);
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+
+    @media (max-width: 767px) {
+        height: calc(100vh - 10.8rem);
+        padding: 1.6rem;
+    }
 
     &__header {
         display: flex;
         flex-direction: column;
         gap: 1.6rem;
+        flex-shrink: 0;
     }
 
     &__title {
@@ -30,6 +39,7 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        flex-shrink: 0;
     }
 
     &__search {
@@ -84,11 +94,14 @@
         }
     }
 
-    // Grid
+    // Grid — takes remaining space, grid items set their own height
     &__grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 1.6rem;
+        align-content: start;  // don't stretch rows to fill height
+        flex-shrink: 0;        // let the parent scroll, not the grid
+        padding-bottom: 2rem;
     }
 
     &__empty {
@@ -118,7 +131,7 @@
         transition: box-shadow 0.2s, border-color 0.2s;
 
         &:hover {
-            border-color: rgba(var(--brand-red-coral-rgb, 6, 182, 212), 0.35);
+            border-color: rgba(6, 182, 212, 0.35);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         }
     }
@@ -163,10 +176,9 @@
 
     &__card-desc {
         font-size: 1.3rem;
-        color: var(--text-general);
+        color: var(--text-less-prominent);
         line-height: 1.55;
         margin: 0;
-        flex: 1;
     }
 
     &__card-meta {
@@ -177,11 +189,10 @@
 
     &__meta-pill {
         font-size: 1.1rem;
-        padding: 0.2rem 0.9rem;
+        padding: 0.2rem 0.8rem;
         border-radius: 20px;
         background: var(--general-section-1);
-        color: var(--text-less-prominent);
-        font-weight: 500;
+        color: var(--text-general);
 
         &--market {
             background: rgba(6, 182, 212, 0.08);
@@ -237,5 +248,7 @@
 }
 
 @keyframes freebot-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }

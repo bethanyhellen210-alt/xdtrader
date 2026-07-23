@@ -1,0 +1,591 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  Q-Trades AI Agent — Vision Cyan
+// ─────────────────────────────────────────────────────────────────────────────
+
+$cyan:       #06b6d4;
+$cyan-dim:   rgba(6, 182, 212, 0.15);
+$cyan-glow:  rgba(6, 182, 212, 0.5);
+$bg:         #050d1a;
+$bg-card:    rgba(7, 17, 32, 0.97);
+$border:     rgba(6, 182, 212, 0.2);
+$text:       #e2e8f0;
+$text-dim:   #64748b;
+$green:      #10b981;
+$red:        #f43f5e;
+$yellow:     #f59e0b;
+
+// ── Floating trigger ─────────────────────────────────────────────────────────
+.ai-agent__trigger {
+    position: fixed;
+    z-index: 9000;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0e7490 0%, $cyan 100%);
+    border: 2px solid rgba(6, 182, 212, 0.6);
+    box-shadow:
+        0 0 0 0 rgba(6, 182, 212, 0.4),
+        0 4px 20px rgba(6, 182, 212, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    user-select: none;
+    touch-action: none;
+    transition: box-shadow 0.2s, transform 0.15s;
+    animation: agent-pulse 3s ease-in-out infinite;
+
+    &:hover {
+        box-shadow:
+            0 0 0 6px rgba(6, 182, 212, 0.15),
+            0 6px 28px rgba(6, 182, 212, 0.45);
+        transform: scale(1.06);
+    }
+
+    &--open {
+        animation: none;
+        box-shadow:
+            0 0 0 8px rgba(6, 182, 212, 0.12),
+            0 6px 32px rgba(6, 182, 212, 0.5);
+    }
+
+    &--dragging {
+        animation: none;
+        transform: scale(1.08);
+        cursor: grabbing;
+    }
+}
+
+.ai-agent__trigger-icon {
+    font-size: 2rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
+}
+
+.ai-agent__trigger-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #fff;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+// ── Panel ─────────────────────────────────────────────────────────────────────
+.ai-agent__panel {
+    position: fixed;
+    z-index: 8999;
+    width: 380px;
+    max-height: calc(100vh - 12rem);
+    background: $bg-card;
+    border: 1px solid $border;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+        0 0 0 1px rgba(6, 182, 212, 0.06),
+        0 20px 60px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(6, 182, 212, 0.08);
+    overflow: hidden;
+    animation: agent-panel-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(16px);
+
+    @media (max-width: 420px) {
+        width: calc(100vw - 2rem);
+    }
+}
+
+.ai-agent__panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 1.6rem 1.2rem;
+    border-bottom: 1px solid $border;
+    flex-shrink: 0;
+    background: rgba(6, 182, 212, 0.04);
+}
+
+.ai-agent__panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    span:first-child { font-size: 1.5rem; }
+}
+
+.ai-agent__panel-title-text {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: $cyan;
+    letter-spacing: 0.05em;
+}
+
+.ai-agent__panel-subtitle {
+    font-size: 1.1rem;
+    color: $text-dim;
+    letter-spacing: 0.03em;
+}
+
+.ai-agent__close {
+    background: transparent;
+    border: none;
+    color: $text-dim;
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    line-height: 1;
+    border-radius: 4px;
+    transition: color 0.15s;
+
+    &:hover { color: $text; }
+}
+
+// ── Scrollable body ──────────────────────────────────────────────────────────
+.ai-agent__panel-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+// ── Section labels ────────────────────────────────────────────────────────────
+.ai-agent__section-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: $text-dim;
+    text-transform: uppercase;
+    margin: 0 0 0.8rem;
+}
+
+// ── Market type buttons ───────────────────────────────────────────────────────
+.ai-agent__market-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.ai-agent__market-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.4rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+
+    &:hover {
+        border-color: rgba(6, 182, 212, 0.3);
+        background: rgba(6, 182, 212, 0.05);
+    }
+
+    &--active {
+        border-color: $cyan;
+        background: rgba(6, 182, 212, 0.1);
+        box-shadow: inset 0 0 0 1px rgba(6, 182, 212, 0.15);
+    }
+}
+
+.ai-agent__market-btn-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.ai-agent__market-btn-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.ai-agent__market-btn-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: $text;
+}
+
+.ai-agent__market-btn-desc {
+    font-size: 1.1rem;
+    color: $text-dim;
+    line-height: 1.4;
+}
+
+// ── Launch button ─────────────────────────────────────────────────────────────
+.ai-agent__launch {
+    width: 100%;
+    padding: 1.2rem;
+    background: linear-gradient(90deg, #0e7490 0%, $cyan 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+
+    &:hover:not(:disabled) {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+    }
+}
+
+// ── Loading state ─────────────────────────────────────────────────────────────
+.ai-agent__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 1.6rem 0;
+}
+
+.ai-agent__loading-ring {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 3px solid rgba(6, 182, 212, 0.15);
+    border-top-color: $cyan;
+    animation: agent-spin 0.9s linear infinite;
+    box-shadow: 0 0 16px rgba(6, 182, 212, 0.3);
+}
+
+.ai-agent__loading-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.ai-agent__loading-step {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.2rem;
+    color: $text-dim;
+    transition: color 0.3s;
+
+    &--active { color: $cyan; }
+    &--done   { color: $green; }
+}
+
+.ai-agent__step-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+
+    .ai-agent__loading-step--active & {
+        animation: agent-dot-pulse 1s ease-in-out infinite;
+    }
+}
+
+// ── Result ────────────────────────────────────────────────────────────────────
+.ai-agent__result {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+.ai-agent__result-market {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+    background: rgba(6, 182, 212, 0.06);
+    border: 1px solid rgba(6, 182, 212, 0.18);
+    border-radius: 8px;
+}
+
+.ai-agent__result-market-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: $cyan;
+}
+
+.ai-agent__result-market-score {
+    font-size: 1.1rem;
+    color: $text-dim;
+}
+
+.ai-agent__signal-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 2rem 1.6rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid $border;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(6,182,212,0.07) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    &--over, &--even, &--matches {
+        border-color: rgba(16, 185, 129, 0.3);
+        &::before { background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(16,185,129,0.08) 0%, transparent 70%); }
+    }
+
+    &--under, &--odd, &--differs {
+        border-color: rgba(244, 63, 94, 0.3);
+        &::before { background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(244,63,94,0.08) 0%, transparent 70%); }
+    }
+}
+
+.ai-agent__signal-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: $text-dim;
+    text-transform: uppercase;
+}
+
+.ai-agent__signal-main {
+    font-size: 3.2rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 20px currentColor;
+    line-height: 1;
+
+    .ai-agent__signal-card--over &, .ai-agent__signal-card--even &, .ai-agent__signal-card--matches & {
+        color: $green;
+        text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    }
+    .ai-agent__signal-card--under &, .ai-agent__signal-card--odd &, .ai-agent__signal-card--differs & {
+        color: $red;
+        text-shadow: 0 0 20px rgba(244, 63, 94, 0.6);
+    }
+}
+
+.ai-agent__signal-barrier {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.ai-agent__signal-barrier-label {
+    font-size: 1rem;
+    color: $text-dim;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.ai-agent__signal-barrier-val {
+    font-size: 2.4rem;
+    font-weight: 900;
+    color: $cyan;
+    text-shadow: 0 0 14px $cyan-glow;
+}
+
+.ai-agent__confidence {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.ai-agent__conf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ai-agent__conf-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $text-dim;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.ai-agent__conf-value {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: $cyan;
+}
+
+.ai-agent__conf-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.ai-agent__conf-bar {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #0e7490, $cyan);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        right: 0; top: 0; bottom: 0;
+        width: 8px;
+        background: #fff;
+        opacity: 0.4;
+        border-radius: 3px;
+        filter: blur(2px);
+    }
+}
+
+// ── Digit frequency bar chart ─────────────────────────────────────────────────
+.ai-agent__freq-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.ai-agent__freq-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.ai-agent__freq-digit {
+    width: 1.6rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $text-dim;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.ai-agent__freq-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.ai-agent__freq-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+
+    &--hot  { background: $cyan; }
+    &--warm { background: rgba(6, 182, 212, 0.5); }
+    &--cold { background: rgba(255, 255, 255, 0.12); }
+}
+
+.ai-agent__freq-pct {
+    width: 4rem;
+    font-size: 1.1rem;
+    color: $text-dim;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+// ── Insights ──────────────────────────────────────────────────────────────────
+.ai-agent__insights {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ai-agent__insight {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 1.2rem;
+    color: $text-dim;
+    line-height: 1.45;
+
+    &::before {
+        content: '›';
+        color: $cyan;
+        flex-shrink: 0;
+        margin-top: -0.1rem;
+        font-weight: 700;
+    }
+}
+
+// ── Trend badge ───────────────────────────────────────────────────────────────
+.ai-agent__trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+
+    &--Bullish { background: rgba(16,185,129,0.12); color: $green; }
+    &--Bearish { background: rgba(244,63,94,0.12);  color: $red; }
+    &--Sideways { background: rgba(245,158,11,0.12); color: $yellow; }
+}
+
+// ── Reset button ──────────────────────────────────────────────────────────────
+.ai-agent__reset {
+    width: 100%;
+    padding: 0.9rem;
+    background: transparent;
+    color: $cyan;
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 8px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+        background: rgba(6, 182, 212, 0.07);
+        border-color: rgba(6, 182, 212, 0.45);
+    }
+}
+
+// ── Disclaimer ────────────────────────────────────────────────────────────────
+.ai-agent__disclaimer {
+    font-size: 1rem;
+    color: rgba(100, 116, 139, 0.7);
+    line-height: 1.5;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    padding-top: 1rem;
+    text-align: center;
+}
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+@keyframes agent-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(6,182,212,0.4), 0 4px 20px rgba(6,182,212,0.3); }
+    50%       { box-shadow: 0 0 0 10px rgba(6,182,212,0), 0 4px 24px rgba(6,182,212,0.4); }
+}
+
+@keyframes agent-panel-in {
+    from { opacity: 0; transform: scale(0.92) translateY(8px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+@keyframes agent-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes agent-dot-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.7); }
+}
